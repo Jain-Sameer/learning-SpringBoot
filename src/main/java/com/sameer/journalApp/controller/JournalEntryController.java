@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
 import java.util.*;
 
 @RestController
@@ -70,7 +68,8 @@ public class JournalEntryController {
         oldentry.setContent(newEntry.getContent());
         oldentry.setTitle(newEntry.getTitle());
         journalEntryService.SaveEntry(oldentry);
-
+        // created a new overloaded save entry service so that, we dont have two of same entries in the user db. cos It was saving it two times.
+        // we don't need to do any changes in the user, only the entry. that is why.
         return new ResponseEntity<>("Everything is fine!", HttpStatus.OK);
     }
 }

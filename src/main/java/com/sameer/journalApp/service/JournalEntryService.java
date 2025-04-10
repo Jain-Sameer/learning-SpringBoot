@@ -33,7 +33,7 @@ public class JournalEntryService {
     }
     public ResponseEntity<?> SaveEntry(JournalEntry j_entry) {
         JournalEntry journalEntry = journalEntryRepo.save(j_entry);
-        return new ResponseEntity<>("Entry created!", HttpStatus.CREATED);
+        return new ResponseEntity<>("Entry created!" + journalEntry.toString(), HttpStatus.CREATED);
     }
     public List<JournalEntry> getAll() {return journalEntryRepo.findAll();}
 

@@ -2,14 +2,10 @@ package com.sameer.journalApp.controller;
 
 import com.sameer.journalApp.entity.User;
 import com.sameer.journalApp.service.UserService;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.ResponseEntity.*;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
 import java.util.*;
 
 @RestController
