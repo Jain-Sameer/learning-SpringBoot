@@ -5,7 +5,6 @@ import com.sameer.journalApp.repository.UserRepo;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +30,6 @@ public class UserService {
     }
 
     public Optional<User> findByuserName(String username) {
-        return repo.findByusername(username);
+        return repo.findByUsername(username);
     }
 }

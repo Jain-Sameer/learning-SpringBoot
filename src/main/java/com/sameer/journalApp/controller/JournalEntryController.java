@@ -18,6 +18,8 @@ public class JournalEntryController {
     private JournalEntryService journalEntryService;
     @Autowired
     private UserService userService;
+
+
     @PostMapping("/create/{username}")
     public ResponseEntity<?> createEntry(@RequestBody JournalEntry j_entry, @PathVariable String username) {
         try{
@@ -25,21 +27,23 @@ public class JournalEntryController {
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Did it reach here ?",HttpStatus.BAD_REQUEST);
         }
     }
+    // ResponseEntity<?> Wildcard Response Entity of Generic Type, we can send any type of information using this.
 
     @GetMapping("/get/{username}")
     public ResponseEntity<?> getEntriesByUser(@PathVariable String username) {
         User user = userService.findByuserName(username).orElse(null);
         if(user == null) return new ResponseEntity<>("UserNotFound",HttpStatus.NOT_FOUND);
         List<JournalEntry> entries = user.getJournalEntries();
-        if(entries != null && !entries.isEmpty()) {
+        if(entries != null && !entries.isEmpty()) { // null and empty two different things, null -> entries array not found or doesnt exist, but empty means there is an entries array but it does not contain any entry in it.
             return new ResponseEntity<>(entries, HttpStatus.OK);
         }
         return new ResponseEntity<>("No Entries",HttpStatus.NOT_FOUND);
     }
-    @GetMapping("/id/{id}")
+
+    @GetMapping("/id/{id}") // FIXME: this stays as it is for now, but when adding authentication we will have to check if the username is authorized to retrieve the entry ie. the entry was created by the request maker and not someone else.
     public ResponseEntity<JournalEntry> getEntryById(@PathVariable ObjectId id) {
 //        System.out.println("ObjectID : " + id);
         Optional<JournalEntry> entry = journalEntryService.findById(id);
@@ -48,11 +52,14 @@ public class JournalEntryController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
     @DeleteMapping("/delete/{username}/{id}")
-    public ResponseEntity<?> deleteById(@PathVariable ObjectId id, @PathVariable String username) { // need to perform cascade delete
+    public ResponseEntity<?> deleteById(@PathVariable ObjectId id, @PathVariable String username) { // need to perform cascade delete, such that reference and the actual are both deleted. ie. the entry is deleted from the Entries db and the User jentries list.
         return journalEntryService.deleteById(id, username);
 //        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+
     @PutMapping("/update/{username}/{id}")
     public ResponseEntity<?> updateByid(@PathVariable ObjectId id, @RequestBody JournalEntry newEntry,@PathVariable String username) {
         User user = userService.findByuserName(username).orElse(null);
@@ -70,7 +77,7 @@ public class JournalEntryController {
         journalEntryService.SaveEntry(oldentry);
         // created a new overloaded save entry service so that, we dont have two of same entries in the user db. cos It was saving it two times.
         // we don't need to do any changes in the user, only the entry. that is why.
-        return new ResponseEntity<>("Everything is fine!", HttpStatus.OK);
+        return new ResponseEntity<>("Everything is under control!", HttpStatus.OK);
     }
 }
 
@@ -79,7 +86,7 @@ public class JournalEntryController {
 // To  use JPA, we need a persistent provider i.e. specific implemenation of JPA specs.
 // Spring DATA JPA built on top of JPA but not an implementaiton of JPA
 
-//as MongoDB is a NoSQL db, ie, no schema, we cant use JPA with mongo
+//as MongoDB is a NoSQL db, ie, no schema, we cant use JPA with mongo, we cant also perform cascade delete in mongoDb, as it is a nosql db and we have to delete both the entries manually
 
 //controller ->> service -->> repository
 //Lombok ->> Lombok is a popular java library, can be used in Spring Booot app.
