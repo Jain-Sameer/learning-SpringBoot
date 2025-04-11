@@ -5,6 +5,8 @@ import com.sameer.journalApp.service.UserService;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
@@ -14,29 +16,24 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @PostMapping("/createUser")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User status = userService.SaveEntry(user);
-        if (status == null) return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
-        return new ResponseEntity<>(status, HttpStatus.CREATED);
-    }
 
-    @GetMapping("/getAll")
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAll();
-        if(users!=null) return new ResponseEntity<>(users, HttpStatus.OK);
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-    @PutMapping("/update/{u_name}")
-    public ResponseEntity<?> updateUser(@RequestBody User newUser, @PathVariable String u_name) {
-        User oldUser = userService.findByuserName(u_name).orElse(null);
-        if(oldUser == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @PutMapping("/update")
+    public ResponseEntity<?> updateUser(@RequestBody User newUser) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String name = authentication.getName();
+        User oldUser = userService.findByuserName(name).orElse(null);
         oldUser.setUsername(newUser.getUsername());
         oldUser.setPassword(newUser.getPassword());
-        User updatedUser = userService.SaveEntry(oldUser);
+        User updatedUser = userService.saveNewUser(oldUser);
         if(updatedUser == null) return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String name = auth.getName();
+        userService.deleteByusername(name);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
