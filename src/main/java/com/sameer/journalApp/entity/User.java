@@ -22,5 +22,5 @@ public class User {
     private String password;
     @DBRef(lazy = false) // creates a links between User and the Journal Entries
     private List<JournalEntry> journalEntries = new ArrayList<>();
-
+    private List<String> roles;
 }
