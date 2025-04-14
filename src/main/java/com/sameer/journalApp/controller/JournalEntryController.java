@@ -8,6 +8,9 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
@@ -20,8 +23,9 @@ public class JournalEntryController {
     private UserService userService;
 
 
-    @PostMapping("/create/{username}")
-    public ResponseEntity<?> createEntry(@RequestBody JournalEntry j_entry, @PathVariable String username) {
+    @PostMapping("/create")
+    public ResponseEntity<?> createEntry(@RequestBody JournalEntry j_entry) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
         try{
             return journalEntryService.SaveEntry(j_entry, username);
         }
@@ -32,42 +36,67 @@ public class JournalEntryController {
     }
     // ResponseEntity<?> Wildcard Response Entity of Generic Type, we can send any type of information using this.
 
-    @GetMapping("/get/{username}")
-    public ResponseEntity<?> getEntriesByUser(@PathVariable String username) {
-        User user = userService.findByuserName(username).orElse(null);
-        if(user == null) return new ResponseEntity<>("UserNotFound",HttpStatus.NOT_FOUND);
-        List<JournalEntry> entries = user.getJournalEntries();
+    @GetMapping("/get")
+    public ResponseEntity<?> getEntriesByUser() {
+        Authentication user = SecurityContextHolder.getContext().getAuthentication();
+        String username = user.getName();
+        User userinDB = userService.findByuserName(username).orElse(null);
+        if(userinDB == null) return new ResponseEntity<>("UserNotFound",HttpStatus.NOT_FOUND);
+        List<JournalEntry> entries = userinDB.getJournalEntries();
         if(entries != null && !entries.isEmpty()) { // null and empty two different things, null -> entries array not found or doesnt exist, but empty means there is an entries array but it does not contain any entry in it.
             return new ResponseEntity<>(entries, HttpStatus.OK);
         }
         return new ResponseEntity<>("No Entries",HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/id/{id}") // FIXME: this stays as it is for now, but when adding authentication we will have to check if the username is authorized to retrieve the entry ie. the entry was created by the request maker and not someone else.
-    public ResponseEntity<JournalEntry> getEntryById(@PathVariable ObjectId id) {
+    @GetMapping("/entry/{id}") // FIXME: this stays as it is for now, but when adding authentication we will have to check if the username is authorized to retrieve the entry ie. the entry was created by the request maker and not someone else.
+    public ResponseEntity<?> getEntryById(@PathVariable ObjectId id) {
 //        System.out.println("ObjectID : " + id);
-        Optional<JournalEntry> entry = journalEntryService.findById(id);
-        if(entry.isPresent()) {
-            return new ResponseEntity<>(entry.get(), HttpStatus.OK);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userService.findByuserName(username).orElse(null);
+
+        if(user == null) return new ResponseEntity<>("User doesn't exist.", HttpStatus.BAD_REQUEST);
+
+
+        List<JournalEntry> entries = user.getJournalEntries();
+        for(JournalEntry entry : entries) {
+            System.out.println(entry);
+            if(entry.getId().equals(id)) {
+                return new ResponseEntity<>("Entry : "+ entry, HttpStatus.OK);
+            }
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>("UnAuthorized or Doesn't exist",HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("/delete/{username}/{id}")
-    public ResponseEntity<?> deleteById(@PathVariable ObjectId id, @PathVariable String username) { // need to perform cascade delete, such that reference and the actual are both deleted. ie. the entry is deleted from the Entries db and the User jentries list.
+    @GetMapping("/entry")
+    public ResponseEntity<?> getAllEntry() {
+//        System.out.println("ObjectID : " + id);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userService.findByuserName(username).orElse(null);
+        if(user == null) return new ResponseEntity<>("User doesn't exist.", HttpStatus.BAD_REQUEST);
+        List<JournalEntry> entries = user.getJournalEntries();
+        if(entries != null && !entries.isEmpty())
+            return new ResponseEntity<>(entries,HttpStatus.OK);
+
+        return new ResponseEntity<>("Not found!", HttpStatus.BAD_REQUEST);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteById(@PathVariable ObjectId id) { // need to perform cascade delete, such that reference and the actual are both deleted. ie. the entry is deleted from the Entries db and the User jentries list.
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return journalEntryService.deleteById(id, username);
 //        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 
-    @PutMapping("/update/{username}/{id}")
-    public ResponseEntity<?> updateByid(@PathVariable ObjectId id, @RequestBody JournalEntry newEntry,@PathVariable String username) {
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateByid(@PathVariable ObjectId id, @RequestBody JournalEntry newEntry) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userService.findByuserName(username).orElse(null);
         if(user == null) {
             return new ResponseEntity<>("Can't update! User doesnt exist", HttpStatus.BAD_REQUEST);
         }
-        JournalEntry oldentry = new JournalEntry();
-        oldentry = user.getJournalEntries().stream().filter(entry -> entry.getId().equals(id)).findFirst().orElse(null);
+        JournalEntry oldentry = user.getJournalEntries().stream().filter(entry -> entry.getId().equals(id)).findFirst().orElse(null);
         if(oldentry == null) {
             return new ResponseEntity<>("Entry not found!", HttpStatus.NOT_FOUND);
         }

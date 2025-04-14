@@ -39,7 +39,7 @@ public class JournalEntryService {
         // We have a PlatformTransactionalManager (interface), its implementation is MongoTransactionManager
         // We will create its bean
         // We can't test transactions on our local db, that is why either we create a replicaSet using rs.initiate() in mongosh or shift to an online hosted db, mongo atlas
-        User user1 = userService.SaveEntry(user);
+        User user1 = userService.saveUser(user);
 
         if(user1 == null) return new ResponseEntity<>("User not updated with the Entry! User is null", HttpStatus.BAD_GATEWAY);
         return new ResponseEntity<>("Entry created!", HttpStatus.CREATED);
@@ -57,13 +57,17 @@ public class JournalEntryService {
         return journalEntryRepo.findById(id);
     }
 
+    @Transactional
     public ResponseEntity<?> deleteById(ObjectId id, String username) {
 
         User user = userService.findByuserName(username).orElse(null);
         if(user == null) return new ResponseEntity<>("User not found!", HttpStatus.BAD_REQUEST);
-//        System.out.println("gagasgsdgsd " + user.getJournalEntries());
-        user.getJournalEntries().removeIf(x -> id.equals(x.getId()));
-        userService.SaveEntry(user);
+        boolean exists = user.getJournalEntries().stream().anyMatch(journalEntry -> id.equals(journalEntry.getId()));
+
+        if(!exists) return new ResponseEntity<>("Entry doesn't exist or unAUthorized", HttpStatus.BAD_REQUEST);
+
+        user.getJournalEntries().removeIf(entry -> id.equals(entry.getId()));
+        userService.saveUser(user);
         journalEntryRepo.deleteById(id);
         
         return new ResponseEntity<>("Entry deleted!", HttpStatus.OK);

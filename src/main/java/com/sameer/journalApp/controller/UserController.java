@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import java.util.*;
 
 @RestController
 @RequestMapping("/user")
@@ -21,11 +20,13 @@ public class UserController {
     public ResponseEntity<?> updateUser(@RequestBody User newUser) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String name = authentication.getName();
+
         User oldUser = userService.findByuserName(name).orElse(null);
+        System.out.println(oldUser.getUsername());
         oldUser.setUsername(newUser.getUsername());
         oldUser.setPassword(newUser.getPassword());
         User updatedUser = userService.saveNewUser(oldUser);
-        if(updatedUser == null) return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        if(updatedUser == null) return new ResponseEntity<>("null here ?",HttpStatus.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(HttpStatus.OK);
     }
     
@@ -36,6 +37,7 @@ public class UserController {
         userService.deleteByusername(name);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
 }
 
 //ORM -> Object Relational Mapping

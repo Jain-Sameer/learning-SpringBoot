@@ -4,7 +4,6 @@ import com.sameer.journalApp.entity.User;
 import com.sameer.journalApp.repository.UserRepo;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.*;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -21,7 +20,7 @@ public class UserService {
 
     private static final PasswordEncoder passwordEncoder=  new BCryptPasswordEncoder();
 
-    public User SaveEntry(User user) {
+    public User saveUser(User user) {
         return repo.save(user);
     }
 
@@ -48,5 +47,11 @@ public class UserService {
     }
     public void deleteByusername(String username) {
         repo.deleteByUsername(username);
+    }
+
+    public User saveAdmin(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRoles(Arrays.asList("USER", "ADMIN"));
+        return repo.save(user);
     }
 }

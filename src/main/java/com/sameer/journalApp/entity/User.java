@@ -20,7 +20,11 @@ public class User {
     private String username;
     @NonNull
     private String password;
-    @DBRef(lazy = false) // creates a links between User and the Journal Entries
+    @DBRef(lazy = false) // creates a links between User and the Journal Entries.
     private List<JournalEntry> journalEntries = new ArrayList<>();
     private List<String> roles;
+
+    public void addRoles(String role) {
+        roles.add(role);
+    }
 }
