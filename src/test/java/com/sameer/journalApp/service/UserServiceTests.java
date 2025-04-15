@@ -5,7 +5,6 @@ import com.sameer.journalApp.entity.JournalEntry;
 import com.sameer.journalApp.entity.User;
 import com.sameer.journalApp.repository.UserRepo;
 import com.sameer.journalApp.repository.journalEntryRepository;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -13,15 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
-
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles("test") // to create a new profile for different environments, create a new resource files named "application-{profile name}.yaml"
 @TestPropertySource(locations = "classpath:application-test.properties")
 public class UserServiceTests {
     @Autowired
@@ -29,6 +25,7 @@ public class UserServiceTests {
     @Autowired
     private journalEntryRepository journalRepo;
 
+    private final int a = 5;
     @Test
     public void testAdd() {
         assertEquals(4, 2 + 2);
@@ -76,16 +73,23 @@ public class UserServiceTests {
         assertFalse(user.get().getJournalEntries().isEmpty());
     }
 
+
     @ParameterizedTest
     @CsvSource({
             "1,1,2",
             "2,10,12",
             "3,3,6"
     })
-    public void test(int a, int b, int expected) {
+    public void testaddonetwothree(int a, int b, int expected) {
+        System.out.println("A : "+a);
         assertEquals(expected, a+b);
     }
 
-    
-    
+    // Annotation like @Before @BeforeAll @BeforeTestMethod("name_of_testCase")
+    //    @BeforeTestMethod("testaddonetwothree")
+    public void fn() {
+        System.out.println("A : "+a);
+    }
+    // We can use mocks instead of using our actual we can create mock of it and not our db.
+    //    we can create a mock repo to get dummy data instead of using our actual data
 }

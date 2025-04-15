@@ -1,5 +1,6 @@
 package com.sameer.journalApp.entity;
 
+import com.mongodb.connection.ProxySettings;
 import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -10,7 +11,9 @@ import java.util.*;
 
 @Document(collection = "user")
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
@@ -23,6 +26,7 @@ public class User {
     @DBRef(lazy = false) // creates a links between User and the Journal Entries.
     private List<JournalEntry> journalEntries = new ArrayList<>();
     private List<String> roles;
+
 
     public void addRoles(String role) {
         roles.add(role);
