@@ -1,0 +1,1 @@
+Learning Spring Boot while creating a journalApp alongside.
