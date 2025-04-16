@@ -11,7 +11,11 @@ spring:
       database: journaldb
       uri: mongodb+srv://sjain5144:sjain5144@cluster0.hifgg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
       auto-index-creation: true
-
+logging:
+  level:
+    com:
+      sameer:
+        journalApp: DEBUG
 
 
 #priority given to application.properties not yaml

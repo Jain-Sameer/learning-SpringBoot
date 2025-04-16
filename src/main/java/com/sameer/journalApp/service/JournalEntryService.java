@@ -1,9 +1,11 @@
 package com.sameer.journalApp.service;
 
+import com.sameer.journalApp.JournalApplication;
 import com.sameer.journalApp.entity.JournalEntry;
 import com.sameer.journalApp.entity.User;
 import com.sameer.journalApp.repository.journalEntryRepository;
 import org.bson.types.ObjectId;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.logging.Logger;
 
 @Component
 public class JournalEntryService {
@@ -22,15 +25,14 @@ public class JournalEntryService {
     private UserService userService;
 
 
+
     @Transactional
     public ResponseEntity<?> SaveEntry(JournalEntry j_entry, String username) {
         User user = userService.findByuserName(username).orElse(null);
         if(user==null) return new ResponseEntity<>("User not found!", HttpStatus.NOT_FOUND);
-        
         j_entry.setDate(LocalDate.now());
         JournalEntry journalEntry = journalEntryRepo.save(j_entry);
         user.getJournalEntries().add(journalEntry);
-
         // for some reason if our program stops in between, we need to make sure that the code which has been executed, reverts back.
         // @Transactional annotation helps us achieve that, we also need to configure in the Main Application @EnableTransactionalManagement
         // Now every method with @Transactional, will have its own transactional context corresponding to every @Transactional method

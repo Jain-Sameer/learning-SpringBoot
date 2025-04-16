@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOError;
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/public")
 public class Public {
@@ -15,7 +18,8 @@ public class Public {
     private UserService userService;
 
     @GetMapping("/healthcheck")
-    public String healthCheck() {
+    public String healthCheck() throws IOException {
+//        throw new RuntimeException();
         return "Okay!";
     }
 
