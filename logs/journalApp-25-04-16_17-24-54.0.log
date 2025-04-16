@@ -1,2 +1,0 @@
-17:24:54.769 [http-nio-8080-exec-3] INFO  c.s.journalApp.service.UserService - User already created, exception thrown
-17:24:54.772 [http-nio-8080-exec-3] DEBUG c.s.journalApp.service.UserService - DEBUG enabled

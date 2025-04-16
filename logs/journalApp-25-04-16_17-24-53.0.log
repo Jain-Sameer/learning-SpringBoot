@@ -1,5 +1,0 @@
-17:24:53.334 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-17:24:53.336 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-17:24:53.337 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
-17:24:53.616 [http-nio-8080-exec-1] INFO  c.s.journalApp.service.UserService - User already created, exception thrown
-17:24:53.616 [http-nio-8080-exec-1] DEBUG c.s.journalApp.service.UserService - DEBUG enabled
