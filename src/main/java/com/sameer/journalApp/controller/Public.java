@@ -7,19 +7,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOError;
+
 import java.io.IOException;
 
 @RestController
 @RequestMapping("/public")
 public class Public {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
+    @Autowired
+    public Public(UserService userService) {
+        this.userService = userService;
+    }
+    
     @GetMapping("/healthcheck")
     public String healthCheck() throws IOException {
-//        throw new RuntimeException();
         return "Okay!";
     }
 

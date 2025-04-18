@@ -1,6 +1,7 @@
 package com.sameer.journalApp.controller;
 
 import com.sameer.journalApp.entity.User;
+import com.sameer.journalApp.service.UserDetailsServiceImpl;
 import com.sameer.journalApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -13,11 +14,14 @@ import java.util.*;
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
-    @Autowired
-    private UserService userService;
+
+    private final UserService userService;
+    AdminController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/getusers")
-    public ResponseEntity<?> getAllUser() {
+    public ResponseEntity<List<User>> getAllUser() {
         List<User> users = userService.getAll();
         if(users != null && !users.isEmpty()) {
             return new ResponseEntity<>(users, HttpStatus.OK);
@@ -26,7 +30,7 @@ public class AdminController {
     }
 
     @PostMapping("/createAdmin")
-    public ResponseEntity<?> createAdmin(@RequestBody User user) {
+    public ResponseEntity<User> createAdmin(@RequestBody User user) {
         User saveduser = userService.saveAdmin(user);
         if(saveduser == null) return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(saveduser,HttpStatus.OK);

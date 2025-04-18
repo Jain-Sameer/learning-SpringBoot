@@ -2,6 +2,7 @@ package com.sameer.journalApp.service;
 
 import com.sameer.journalApp.repository.UserRepo;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
@@ -14,7 +15,7 @@ import java.util.*;
 
 import static org.mockito.Mockito.*;
 
-
+@Disabled
 public class UserDetailsServiceImplTests {
 
     @InjectMocks

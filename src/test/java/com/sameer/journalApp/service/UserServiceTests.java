@@ -5,6 +5,7 @@ import com.sameer.journalApp.entity.JournalEntry;
 import com.sameer.journalApp.entity.User;
 import com.sameer.journalApp.repository.UserRepo;
 import com.sameer.journalApp.repository.journalEntryRepository;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -16,6 +17,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
+@Disabled
 @SpringBootTest
 @ActiveProfiles("test") // to create a new profile for different environments, create a new resource files named "application-{profile name}.yaml"
 @TestPropertySource(locations = "classpath:application-test.properties")

@@ -12,17 +12,20 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    @Autowired
-    UserService userService;
 
+    UserService userService;
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateUser(@RequestBody User newUser) {
+    public ResponseEntity<String> updateUser(@RequestBody User newUser) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String name = authentication.getName();
 
         User oldUser = userService.findByuserName(name).orElse(null);
-        System.out.println(oldUser.getUsername());
+        assert oldUser != null;
         oldUser.setUsername(newUser.getUsername());
         oldUser.setPassword(newUser.getPassword());
         User updatedUser = userService.saveNewUser(oldUser);
@@ -31,7 +34,7 @@ public class UserController {
     }
     
     @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteUser() {
+    public ResponseEntity<HttpStatus> deleteUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String name = auth.getName();
         userService.deleteByusername(name);

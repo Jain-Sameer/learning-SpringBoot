@@ -6,20 +6,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-
+import static org.springframework.security.core.userdetails.User.*;
 @Component
 public class UserDetailsServiceImpl implements UserDetailsService {
 
+
+
+
+    private final UserRepo repo;
     @Autowired
-    private UserRepo repo;
+    public UserDetailsServiceImpl(UserRepo repo) {
+        this.repo = repo;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = repo.findByUsername(username).orElse(null);
 
         if(user != null) {
-            UserDetails userDetails = org.springframework.security.core.userdetails.User.builder().username(user.getUsername()).password(user.getPassword()).roles(user.getRoles().toArray(new String[0])).build();
-            return userDetails;
+            return builder().username(user.getUsername()).password(user.getPassword()).roles(user.getRoles().toArray(new String[0])).build();
         }
         throw new UsernameNotFoundException("user not found!");
     }

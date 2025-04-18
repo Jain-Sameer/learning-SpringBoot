@@ -17,11 +17,16 @@ import java.util.*;
 @RestController
 @RequestMapping("/journal")
 public class JournalEntryController {
-    @Autowired
-    private JournalEntryService journalEntryService;
-    @Autowired
-    private UserService userService;
 
+    private final JournalEntryService journalEntryService;
+
+    private final UserService userService;
+
+    @Autowired
+    JournalEntryController(JournalEntryService journalEntryService, UserService userService) {
+        this.journalEntryService = journalEntryService;
+        this.userService = userService;
+    }
 
     @PostMapping("/create")
     public ResponseEntity<?> createEntry(@RequestBody JournalEntry j_entry) {
@@ -49,9 +54,8 @@ public class JournalEntryController {
         return new ResponseEntity<>("No Entries",HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/entry/{id}") // FIXME: this stays as it is for now, but when adding authentication we will have to check if the username is authorized to retrieve the entry ie. the entry was created by the request maker and not someone else.
-    public ResponseEntity<?> getEntryById(@PathVariable ObjectId id) {
-//        System.out.println("ObjectID : " + id);
+    @GetMapping("/entry/{id}")
+    public ResponseEntity<String> getEntryById(@PathVariable ObjectId id) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userService.findByuserName(username).orElse(null);
 
@@ -60,7 +64,6 @@ public class JournalEntryController {
 
         List<JournalEntry> entries = user.getJournalEntries();
         for(JournalEntry entry : entries) {
-            System.out.println(entry);
             if(entry.getId().equals(id)) {
                 return new ResponseEntity<>("Entry : "+ entry, HttpStatus.OK);
             }
@@ -69,14 +72,14 @@ public class JournalEntryController {
     }
 
     @GetMapping("/entry")
-    public ResponseEntity<?> getAllEntry() {
-//        System.out.println("ObjectID : " + id);
+    public ResponseEntity<String> getAllEntry() {
+
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userService.findByuserName(username).orElse(null);
         if(user == null) return new ResponseEntity<>("User doesn't exist.", HttpStatus.BAD_REQUEST);
         List<JournalEntry> entries = user.getJournalEntries();
         if(entries != null && !entries.isEmpty())
-            return new ResponseEntity<>(entries,HttpStatus.OK);
+            return new ResponseEntity<>(entries.toString(),HttpStatus.OK);
 
         return new ResponseEntity<>("Not found!", HttpStatus.BAD_REQUEST);
     }
@@ -85,7 +88,6 @@ public class JournalEntryController {
     public ResponseEntity<?> deleteById(@PathVariable ObjectId id) { // need to perform cascade delete, such that reference and the actual are both deleted. ie. the entry is deleted from the Entries db and the User jentries list.
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return journalEntryService.deleteById(id, username);
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 
@@ -104,7 +106,7 @@ public class JournalEntryController {
         oldentry.setContent(newEntry.getContent());
         oldentry.setTitle(newEntry.getTitle());
         journalEntryService.SaveEntry(oldentry);
-        // created a new overloaded save entry service so that, we dont have two of same entries in the user db. cos It was saving it two times.
+        // created a new overloaded save entry service so that, we don't have two of same entries in the user db. cos It was saving it two times.
         // we don't need to do any changes in the user, only the entry. that is why.
         return new ResponseEntity<>("Everything is under control!", HttpStatus.OK);
     }

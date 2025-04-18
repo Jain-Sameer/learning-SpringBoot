@@ -27,7 +27,7 @@ public class JournalEntryService {
 
 
     @Transactional
-    public ResponseEntity<?> SaveEntry(JournalEntry j_entry, String username) {
+    public ResponseEntity<String> SaveEntry(JournalEntry j_entry, String username) {
         User user = userService.findByuserName(username).orElse(null);
         if(user==null) return new ResponseEntity<>("User not found!", HttpStatus.NOT_FOUND);
         j_entry.setDate(LocalDate.now());
@@ -48,7 +48,7 @@ public class JournalEntryService {
     }
 
 
-    public ResponseEntity<?> SaveEntry(JournalEntry j_entry) {
+    public ResponseEntity<String> SaveEntry(JournalEntry j_entry) {
         JournalEntry journalEntry = journalEntryRepo.save(j_entry);
         return new ResponseEntity<>("Entry created!" + journalEntry.toString(), HttpStatus.CREATED);
     }
@@ -60,7 +60,7 @@ public class JournalEntryService {
     }
 
     @Transactional
-    public ResponseEntity<?> deleteById(ObjectId id, String username) {
+    public ResponseEntity<String> deleteById(ObjectId id, String username) {
 
         User user = userService.findByuserName(username).orElse(null);
         if(user == null) return new ResponseEntity<>("User not found!", HttpStatus.BAD_REQUEST);
