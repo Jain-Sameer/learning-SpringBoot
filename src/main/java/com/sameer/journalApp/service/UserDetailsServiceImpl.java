@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
 import static org.springframework.security.core.userdetails.User.*;
-@Component
+
+@Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
 
