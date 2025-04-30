@@ -39,6 +39,11 @@ public class Public {
     @GetMapping("/weather")
     public String weatherCheck(@RequestBody String city) {
         System.out.println(city);
-        return "Hi! " +  wService.getWeather(city).getBody().main.temp;
+        return "Hi! " +  wService.getWeather(city).getBody().main.toString();
+    }
+    @GetMapping("/test")
+    public String testing() {
+        String style = "color:red;";
+        return "<h1 style=\"" +style+ "\">Sameer Jain</h1>";
     }
 }
