@@ -1,7 +1,17 @@
 spring:
   profiles:
     active: main
-
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: jainsameer2003@gmail.com
+    password: vhxx wotz dqrz xfmp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 weather:
   api:
     key: "8825fd8e02817dd28bba08d953da331c"
