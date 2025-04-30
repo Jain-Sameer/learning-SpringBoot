@@ -1,6 +1,0 @@
-spring:
-  data:
-    mongodb:
-      database: journaldb_test
-      uri: mongodb://localhost:27017/journaldb_test
-      auto-index-creation: true

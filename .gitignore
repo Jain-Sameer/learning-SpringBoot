@@ -5,7 +5,9 @@ target/
 !**/src/test/**/target/
 logs
 ### STS ###
-src/main/resources/application
+src/main/resources/application-*.yaml
+src/main/resources/application.yaml
+src/main/resources/application.properties
 .apt_generated
 .classpath
 .factorypath
