@@ -21,6 +21,8 @@ public class User {
     @Indexed(unique = true)
     @NonNull // part of lombok
     private String username;
+    private String email;
+    private boolean sentimentAnalysis;
     @NonNull
     private String password;
     @DBRef(lazy = false) // creates a links between User and the Journal Entries.

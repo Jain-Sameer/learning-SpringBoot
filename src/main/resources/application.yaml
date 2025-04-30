@@ -1,3 +1,10 @@
 spring:
   profiles:
     active: main
+
+weather:
+  api:
+    key: "8825fd8e02817dd28bba08d953da331c"
+elevenlabs:
+  api:
+    key: "sk_b17aa9d3f702bbdc8bdd5d36ce75a9cccaa3c7c371191463"

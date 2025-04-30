@@ -20,6 +20,7 @@ public class weatherService {
     // Spring doesnt mess with static variables.
     @Value("${weather.api.key}")
     private String apiKey;
+
 //    private static final String API = "http://api.openweathermap.org/geo/1.0/direct?q={city name}&limit={limit}&appid={API key}";
 //    private static final String WeatherAPI = "https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}";
     private String lon ;
@@ -31,6 +32,7 @@ public class weatherService {
     private AppCache APP_CACHE;
 
     public ResponseEntity<weatherResponse> getWeather(String city) {
+        System.out.println(apiKey);
         String api_uri = APP_CACHE.cache.get("geo_weather_api")
                 .replace("{city name}", city)
                 .replace("{limit}", "2")
