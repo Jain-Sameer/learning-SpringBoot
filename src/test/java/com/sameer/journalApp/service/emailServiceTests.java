@@ -1,5 +1,6 @@
 package com.sameer.journalApp.service;
 
+import com.sameer.journalApp.schedulers.UserScheduler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class emailServiceTests {
 
     @Autowired EmailService emailService;
+    @Autowired UserScheduler userScheduler;
 
     @Test
     public void testEmailSender() {
@@ -16,5 +18,9 @@ public class emailServiceTests {
         String text = "Hi there! It's me!";
 
         emailService.sendEmail(to, subject, text);
+    }
+
+    @Test public void testSA() {
+        userScheduler.fetchUsersAndSendSAMail();
     }
 }
