@@ -1,18 +1,17 @@
 package com.sameer.journalApp.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sameer.journalApp.apiresponse.georeponse;
 import com.sameer.journalApp.apiresponse.weatherResponse;
-//import com.sameer.journalApp.cache.APP_CACHE;
 import com.sameer.journalApp.cache.AppCache;
-import com.sameer.journalApp.entity.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Optional;
 
 @Service
 public class weatherService {
@@ -21,45 +20,62 @@ public class weatherService {
     @Value("${weather.api.key}")
     private String apiKey;
 
-//    private static final String API = "http://api.openweathermap.org/geo/1.0/direct?q={city name}&limit={limit}&appid={API key}";
-//    private static final String WeatherAPI = "https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}";
-    private String lon ;
-    private String lat ;
+
     @Autowired
     private RestTemplate restTemplate;
 
     @Autowired
     private AppCache APP_CACHE;
 
+    @Autowired RedisService redisService;
+
+
     public ResponseEntity<weatherResponse> getWeather(String city) {
-        System.out.println(apiKey);
+        weatherResponse cachedResponse = redisService.get("weather_of_" + city, weatherResponse.class);
+        if (cachedResponse != null) {
+            System.out.println("no api call");
+            return ResponseEntity.ok(cachedResponse);
+        }
+
         String api_uri = APP_CACHE.cache.get("geo_weather_api")
                 .replace("{city name}", city)
                 .replace("{limit}", "2")
                 .replace("{API key}", apiKey);
 
-        // 👇 Corrected type
         ResponseEntity<georeponse[]> response = restTemplate.exchange(
                 api_uri,
                 HttpMethod.GET,
                 null,
-                georeponse[].class // Expect an array
+                georeponse[].class
         );
 
         georeponse[] geoArray = response.getBody();
-        if(geoArray == null) return null;
-        lon = geoArray[0].getLon() + "" ;
-        lat = geoArray[0].getLat()+ "";
+        if (geoArray == null || geoArray.length == 0) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
 
-        String weatherAPI_uri = APP_CACHE.cache.get("weather_api").replace("{lat}", lat).replace("{lon}", lon).replace("{API key}", apiKey);
+        String lon = String.valueOf(geoArray[0].getLon());
+        String lat = String.valueOf(geoArray[0].getLat());
 
-        ResponseEntity<weatherResponse> weatherResponseResponseEntity = restTemplate.exchange(weatherAPI_uri, HttpMethod.GET, null, weatherResponse.class);
-        // Return the first result or null
-        return weatherResponseResponseEntity;
+        String weatherAPI_uri = APP_CACHE.cache.get("weather_api")
+                .replace("{lat}", lat)
+                .replace("{lon}", lon)
+                .replace("{API key}", apiKey);
+
+        ResponseEntity<weatherResponse> weatherResponseEntity = restTemplate.exchange(
+                weatherAPI_uri,
+                HttpMethod.GET,
+                null,
+                weatherResponse.class
+        );
+        if (weatherResponseEntity.getBody() != null) {
+            // Use a positive TTL or null to avoid Redis errors
+            redisService.set("weather_of_" + city, weatherResponseEntity.getBody(), -1L); // 1 hour TTL example
+        }
+
+        return weatherResponseEntity;
     }
 
-    public void openWeather() {
 
-    }
 
 }

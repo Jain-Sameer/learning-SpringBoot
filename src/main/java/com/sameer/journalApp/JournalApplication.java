@@ -20,4 +20,4 @@ public class JournalApplication {
 // API -> Application Programming Interface
 // LogBack, Log4j2, JUL -> Logging frameworks
 // Logging Levels -? Trace, Debug, Info, Earn, Error
-// slf4j -> simple logging fascade for java, a logging abstraction for java
+// SLF4J -> simple logging fascade for java, a logging abstraction for java

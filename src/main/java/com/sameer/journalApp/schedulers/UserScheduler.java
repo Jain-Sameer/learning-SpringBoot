@@ -4,9 +4,11 @@ import com.sameer.journalApp.cache.AppCache;
 import com.sameer.journalApp.entity.JournalEntry;
 import com.sameer.journalApp.entity.User;
 import com.sameer.journalApp.enums.Sentiment;
+import com.sameer.journalApp.model.SentimentData;
 import com.sameer.journalApp.repository.UserRepoIMPL;
 import com.sameer.journalApp.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -29,8 +31,11 @@ public class UserScheduler {
     @Autowired
     private AppCache appCache;
 
+    @Autowired
+    private KafkaTemplate<String, SentimentData> kafkaTemplate;
+
 //    @Scheduled(cron = "0 25 20 * * Sat")
-    @Scheduled(cron = "0 */5 * * * *")
+//    @Scheduled(cron = "0 */10 * * * *")
     public void fetchUsersAndSendSAMail() {
         List<User> userForSA = userRepoIMPL.getUserForSA();
         for(User user : userForSA) {
@@ -54,12 +59,13 @@ public class UserScheduler {
                 }
             }
             if(mostFrequent != null) {
-                emailService.sendEmail("jainsameer2003@gmail.com", "Sentiment of Last 7 Days : ", mostFrequent.toString());
+                SentimentData sentimentData = SentimentData.builder().email(user.getEmail()).sentiment("Sentiment of Last 7 Days : " + mostFrequent.toString()).build();
+                kafkaTemplate.send("weekly-sentiments", sentimentData.getEmail(), sentimentData);
             }
         }
     }
 
-    @Scheduled(cron = "0 */5 * * * *")
+    @Scheduled(cron = "0 */10 * * * *")
     public void clearAppCache() {
         appCache.init();
     }
