@@ -4,6 +4,7 @@ import com.sameer.journalApp.cache.AppCache;
 import com.sameer.journalApp.entity.User;
 import com.sameer.journalApp.service.UserDetailsServiceImpl;
 import com.sameer.journalApp.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/admin")
+@Tag(name = "Admin API's")
 public class AdminController {
 
     @Autowired

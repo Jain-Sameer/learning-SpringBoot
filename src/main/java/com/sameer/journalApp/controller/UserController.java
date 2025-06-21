@@ -2,6 +2,7 @@ package com.sameer.journalApp.controller;
 
 import com.sameer.journalApp.entity.User;
 import com.sameer.journalApp.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
+@Tag(name = "User API's")
 public class UserController {
 
     UserService userService;

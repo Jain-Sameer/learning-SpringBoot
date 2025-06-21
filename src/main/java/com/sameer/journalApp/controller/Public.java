@@ -5,6 +5,7 @@ import com.sameer.journalApp.service.UserDetailsServiceImpl;
 import com.sameer.journalApp.service.UserService;
 import com.sameer.journalApp.service.weatherService;
 import com.sameer.journalApp.utils.JwtUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/public")
 @Slf4j
+@Tag(name = "Public API's")
 public class Public {
 
     private static final Logger log = LoggerFactory.getLogger(Public.class);

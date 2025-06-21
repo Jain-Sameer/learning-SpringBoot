@@ -4,6 +4,7 @@ import com.sameer.journalApp.entity.JournalEntry;
 import com.sameer.journalApp.entity.User;
 import com.sameer.journalApp.service.JournalEntryService;
 import com.sameer.journalApp.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/journal")
+@Tag(name = "Journal Entry API's")
 public class JournalEntryController {
 
     private final JournalEntryService journalEntryService;

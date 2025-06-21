@@ -33,11 +33,20 @@ public class SpringSecurity  {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
 
-        return http.authorizeHttpRequests(request -> request
-                        .requestMatchers("/public/**").permitAll()
+        return http
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers(
+                                "/public/**",
+                                "/swagger-ui/**",          // <-- fix: recursive match
+                                "/v3/api-docs/**",         // <-- critical for Swagger to work
+                                "/swagger-resources/**",
+                                "/webjars/**",
+                                "/docs"
+                        ).permitAll()
                         .requestMatchers("/journal/**", "/user/**").authenticated()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll()
+                )
                 .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
